@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2022-04-28
+## [0.1.0] - 2022-06-17
 ### Added
-- Repo Skeleton 
+- app, conf, construct, cli and api packages
+- added health handlers for kubernetes health checks
+- Makefile to help with kubernetes and basic development
