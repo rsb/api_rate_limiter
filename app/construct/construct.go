@@ -10,6 +10,7 @@ import (
 	"github.com/rsb/failure"
 	"go.uber.org/zap"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gofiber/contrib/fiberzap"
@@ -34,6 +35,42 @@ func NewLogger(appVersion string) (*zap.SugaredLogger, error) {
 	}
 
 	return l, nil
+}
+
+func NewAPIDependencies(sd chan os.Signal, l *zap.SugaredLogger, c conf.LimiterAPI) (app.Dependencies, error) {
+	var d app.Dependencies
+	if sd == nil {
+		return d, failure.InvalidParam("sd(chan os.Signal) is nil")
+	}
+
+	if l == nil {
+		return d, failure.InvalidParam("l(*zap.SugaredLogger) is nil")
+	}
+
+	build := c.Version.Build
+	if build == "" {
+		build = "unavailable"
+	}
+
+	d = app.Dependencies{
+		Build:           build,
+		Host:            c.API.Host,
+		DebugHost:       c.API.DebugHost,
+		ReadTimout:      c.API.ReadTimeout,
+		WriteTimeout:    c.API.WriteTimeout,
+		IdleTimeout:     c.API.IdleTimeout,
+		ShutdownTimeout: c.API.ShutdownTimeout,
+		Shutdown:        sd,
+		Logger:          l,
+		Kubernetes: app.KubeInfo{
+			Pod:       c.Kubernetes.Pod,
+			PodIP:     c.Kubernetes.PodIP,
+			Node:      c.Kubernetes.Node,
+			Namespace: c.Kubernetes.Namespace,
+		},
+	}
+
+	return d, nil
 }
 
 func NewHttpClient(config conf.HTTPClient) *http.Client {

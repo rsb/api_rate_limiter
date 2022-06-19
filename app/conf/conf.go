@@ -10,6 +10,12 @@ import (
 	"time"
 )
 
+type LimiterAPI struct {
+	Version
+	Kubernetes
+	API
+}
+
 type Version struct {
 	Build string `conf:"env:API_BUILD_VERSION, cli:api-build-version, cli-u:version of the web api"`
 	Desc  string `conf:"env:API_BUILD_DESC,    cli:api-build-desc,    cli-u:summary of the build"`
@@ -43,6 +49,13 @@ type HTTPClient struct {
 	MaxIdleConn        int           `conf:"default: 100, env:LOLA_HTTP_CLIENT_MAX_IDLE_CONN, cli:http-client-max-idle-con, cli-u:http client max idle connections"`
 	MaxConnPerHost     int           `conf:"default: 100, env:LOLA_HTTP_CLIENT_MAX_CONN_PER_HOST, cli:http-client-max-con-per-host, cli-u:http client max connection per host"`
 	MaxIdleConnPerHost int           `conf:"default: 100, env:LOLA_HTTP_CLIENT_MAX_IDLE_PER_HOST, cli:http-client-max-idle-per-host, cli-u:http client max idle connections per host"`
+}
+
+type Kubernetes struct {
+	Pod       string `conf:"env:KUBERNETES_PODNAME"`
+	PodIP     string `conf:"env:KUBERNETES_NAMESPACE_POD_IP"`
+	Node      string `conf:"env:KUBERNETES_NODENAME"`
+	Namespace string `conf:"env:KUBERNETES_NAMESPACE"`
 }
 
 type PingConfig struct {

@@ -4,12 +4,16 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/rsb/api_rate_limiter/app"
 	"github.com/rsb/failure"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 	"log"
+	"os"
+	"strings"
 
 	rsbConf "github.com/rsb/conf"
 )
@@ -35,9 +39,22 @@ func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("[init] no .env file used.")
 	}
+
+	cobra.OnInitialize(initConfig)
+	template := `{{printf "%s: %s - version %s\n" .Name .Short .Version}}`
+	rootCmd.SetVersionTemplate(template)
+
+	replacer := strings.NewReplacer("-", "_")
+	viper.SetEnvKeyReplacer(replacer)
+	viper.SetEnvPrefix(strings.ToUpper(app.ServiceName))
+
+	rootCmd.AddCommand(apiCmd)
+
+	// api sub commands
+	apiCmd.AddCommand(serveCmd)
 }
 
-func InitConfig() {
+func initConfig() {
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
@@ -64,15 +81,34 @@ func Execute(b string) {
 	cobra.CheckErr(rootCmd.Execute())
 }
 
-// ProcessConfigCLI will convert configuration defined in struct annotations
+// processConfigCLI will convert configuration defined in struct annotations
 // and process them though cli flags, env vars and config files.
 // CLI flag    - the highest priority
 // ENV Var  	 - next highest
 // Config file - lowest
-func ProcessConfigCLI(v *viper.Viper, c interface{}) error {
+func processConfigCLI(v *viper.Viper, c interface{}) error {
 	if err := rsbConf.ProcessCLI(v, c); err != nil {
 		return failure.Wrap(err, "rsbConf.ProcessCLI failed")
 	}
 
 	return nil
+}
+
+func bindCLI(c *cobra.Command, v *viper.Viper, config interface{}) {
+	if err := rsbConf.BindCLI(c, v, config); err != nil {
+		err = failure.Wrap(err, "rsbConf.BindCLI failed")
+		_, _ = fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
+}
+
+func failureExit(log *zap.SugaredLogger, err error, cat, msg string) {
+	err = failure.Wrap(err, msg)
+	if log == nil {
+		_, _ = fmt.Fprintf(os.Stderr, "ERROR: (%s)", err.Error())
+		os.Exit(1)
+	}
+
+	log.Errorw(cat, "ERROR", err)
+	os.Exit(1)
 }
