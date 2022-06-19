@@ -1,0 +1,25 @@
+FROM golang:1.18.3 as build_limiter-api
+ENV CGO_ENABLED 0
+ARG VCS_REF
+
+COPY . /service
+
+WORKDIR /service/app/cli/limiter
+RUN go build -ldflags "-X main.build=${VCS_REF}"
+
+# Run the Go Binary in Alpine
+FROM alpine:3.14
+ARG BUILD_DATE
+ARG VCS_REF
+COPY --from=build_lola-api /service/.env /service/.env
+COPY --from=build_lola-api /service/app/cli/limiter/limiter /service/limiter
+
+WORKDIR /service
+CMD ["./limiter", "api", "serve"]
+
+LABEL org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.title="limiter-api" \
+      org.opencontainers.image.authors="Robert Scott-Buccleuch <60840+rsb@users.noreply.github.com>" \
+      org.opencontainers.image.source="https://github.com/rsb/api_rate_limiter" \
+      org.opencontainers.image.revision="${VCS_REF}" \
+      org.opencontainers.image.vendor="Robert Scott-Buccleuch"
