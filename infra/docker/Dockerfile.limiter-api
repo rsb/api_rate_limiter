@@ -11,8 +11,8 @@ RUN go build -ldflags "-X main.build=${VCS_REF}"
 FROM alpine:3.14
 ARG BUILD_DATE
 ARG VCS_REF
-COPY --from=build_lola-api /service/.env /service/.env
-COPY --from=build_lola-api /service/app/cli/limiter/limiter /service/limiter
+COPY --from=build_limiter-api /service/.env /service/.env
+COPY --from=build_limiter-api /service/app/cli/limiter/limiter /service/limiter
 
 WORKDIR /service
 CMD ["./limiter", "api", "serve"]
