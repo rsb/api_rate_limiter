@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [0.2.0] - 2022-06-19
+# Added
+- dockerfile for limiter api
+- wired up serve command `limter api serve` will start up web server
+- no routes or limiter yet
+
 ## [0.1.0] - 2022-06-17
 ### Added
 - app, conf, construct, cli and api packages
