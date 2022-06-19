@@ -14,6 +14,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2022-06-19
+### Added
+- kubernetes support in `infra/k8s`
+- currently only supporting `kind`
+- `env_sample` to document env configurations for the system
+- Readme section for installation
+
+### Fixed
+- Makefile commands supporting kubernetes management
+
+
+## [0.3.0] - 2022-06-19
+### Added
+- ping package to handle route 'GET /ping' the route our example will be using
 
 ## [0.2.0] - 2022-06-19
 # Added

@@ -4,16 +4,25 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/rsb/api_rate_limiter/app"
 	"github.com/rsb/api_rate_limiter/app/api/handlers/health"
+	"github.com/rsb/api_rate_limiter/app/api/handlers/ping"
 )
 
-func AddAllRoutes(r *fiber.App, d *app.Dependencies) *fiber.App {
-	r = AddHealthCheckRoutes(r, d)
-	return r
+func AddAllRoutes(a *fiber.App, d *app.Dependencies) *fiber.App {
+	a = AddHealthCheckRoutes(a, d)
+	a = AddPingRoutes(a, d)
+
+	return a
 }
 
-func AddHealthCheckRoutes(r *fiber.App, d *app.Dependencies) *fiber.App {
+func AddHealthCheckRoutes(a *fiber.App, d *app.Dependencies) *fiber.App {
 	checker := health.NewCheckHandler(d)
-	r.Get("/readiness", checker.Readiness)
+	a.Get("/readiness", checker.Readiness)
 
-	return r
+	return a
+}
+
+func AddPingRoutes(a *fiber.App, _ *app.Dependencies) *fiber.App {
+	h := &ping.PongHandler{}
+	a.Get("/ping", h.Ping)
+	return a
 }

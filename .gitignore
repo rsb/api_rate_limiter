@@ -32,3 +32,6 @@ go.work
 
 # ignore any pem files
 *.pem
+
+# ignore api binary at root
+/limiter

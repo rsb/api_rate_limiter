@@ -2,27 +2,34 @@ SHELL := /bin/bash
 
 VERSION := 1.0
 KIND_CLUSTER := limiter-api-cluster
-LIMITER_API_DOCKER_IMAGE := limit-api-amd64
+LIMITER_API_DOCKER_IMAGE := limiter-api-amd64
 
 tidy:
 	go mod tidy && go mod vendor
 
-all: limiter-api
+all: docker-limiter-api
 
 run:
 	go run app/cli/limiter/main.go api serve
 
+build:
+	VCS_REF=$(git rev-parse HEAD)
+	cd ./app/cli/limiter && \
+	go build -ldflags "-X main.build=${VCS_REF}" -o ../../../
+
 test:
 	go test ./...
 
-limiter-api:
+docker-limiter-api:
 	docker build \
-		-f infra/docker/Dockerfile.lola-api \
+		-f infra/docker/Dockerfile.limiter-api \
 		-t $(LIMITER_API_DOCKER_IMAGE):$(VERSION) \
 		--build-arg VCS_REF=$(VERSION) \
 		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 		.
 
+docker-run-limiter-api:
+	docker run -d $(LIMITER_API_DOCKER_IMAGE):$(VERSION)
 
 
 # ==============================================================================
@@ -59,9 +66,6 @@ kind-load:
 	kind load docker-image $(LIMITER_API_DOCKER_IMAGE):$(VERSION) --name $(KIND_CLUSTER)
 
 kind-apply:
-	kustomize build infra/k8s/kind/database-pod | kubectl apply -f -
-	kubectl wait --namespace=database-system --timeout=120s --for=condition=Available deployment/database-pod
-
 	kustomize build infra/k8s/kind/limiter-pod | kubectl apply -f -
 
 kind-describe:
@@ -72,5 +76,4 @@ kind-logs:
 
 kind-service-delete:
 	kustomize build infra/k8s/kind/limiter-pod | kubectl delete -f -
-	kustomize build infra/k8s/kind/database-pod | kubectl delete -f -
 
