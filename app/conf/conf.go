@@ -22,14 +22,18 @@ type Version struct {
 }
 
 type API struct {
-	Host            string        `conf:"env:API_HOST, cli:api-host, default:0.0.0.0:3000, cli-u:web api host"`
-	DebugHost       string        `conf:"env:API_DEBUG_HOST, cli:debug-host, default:0.0.0.0:4000, cli-u:debug host"`
-	IsCaseSensitive bool          `conf:"env:API_ROUTE_CASE_SENSITIVE, cli:api-route-case-sensitive, default:false, cli-u:will routes be case sensitive"`
-	IsETag          bool          `conf:"env:API_ETAG, cli:api-etag, default:false, cli-u:enable/disable etag header generation"`
-	ReadTimeout     time.Duration `conf:"env:API_READ_TIMEOUT,cli:api-read-timeout, default:5s"`
-	WriteTimeout    time.Duration `conf:"env:API_WRITE_TIMEOUT,cli:api-write-timeout, default:20s"`
-	IdleTimeout     time.Duration `conf:"env:API_IDLE_TIMEOUT, cli:api-idle-timeout, default:120s"`
-	ShutdownTimeout time.Duration `conf:"env:API_SHUTDOWN_TIMEOUT,cli:api-shutdown-timeout, default:20s"`
+	Host                   string        `conf:"env:API_HOST, cli:api-host, default:0.0.0.0:3000, cli-u:web api host"`
+	DebugHost              string        `conf:"env:API_DEBUG_HOST, cli:debug-host, default:0.0.0.0:4000, cli-u:debug host"`
+	IsCaseSensitive        bool          `conf:"env:API_ROUTE_CASE_SENSITIVE, cli:api-route-case-sensitive, default:false, cli-u:will routes be case sensitive"`
+	IsETag                 bool          `conf:"env:API_ETAG, cli:api-etag, default:false, cli-u:enable/disable etag header generation"`
+	ReadTimeout            time.Duration `conf:"env:API_READ_TIMEOUT,cli:api-read-timeout, default:5s"`
+	WriteTimeout           time.Duration `conf:"env:API_WRITE_TIMEOUT,cli:api-write-timeout, default:20s"`
+	IdleTimeout            time.Duration `conf:"env:API_IDLE_TIMEOUT, cli:api-idle-timeout, default:120s"`
+	ShutdownTimeout        time.Duration `conf:"env:API_SHUTDOWN_TIMEOUT,cli:api-shutdown-timeout, default:20s"`
+	RateLimit              uint64        `conf:"env:API_RATE_LIMIT,cli:api-rate-limit, default:10"`
+	RateLimitInterval      time.Duration `conf:"env:API_RATE_LIMIT_INTERVAL,cli:api-rate-limit-interval, default:60s"`
+	RateLimitCleanStale    time.Duration `conf:"env:API_RATE_CLEAN_STALE, cli:api-rate-limit-clean-stale, default:6h"`
+	RateLimitCleanInactive time.Duration `conf:"env:API_RATE_CLEAN_INACTIVE, cli:api-rate-limit-clean-inactive, default:12h"`
 }
 
 func (a API) NewFiberConfig() fiber.Config {

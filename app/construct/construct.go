@@ -5,6 +5,7 @@ package construct
 import (
 	"github.com/rsb/api_rate_limiter/app"
 	"github.com/rsb/api_rate_limiter/app/api/handlers/health"
+	"github.com/rsb/api_rate_limiter/app/api/middle/limiter"
 	"github.com/rsb/api_rate_limiter/app/conf"
 	"github.com/rsb/api_rate_limiter/foundation/logging"
 	"github.com/rsb/failure"
@@ -53,15 +54,10 @@ func NewAPIDependencies(sd chan os.Signal, l *zap.SugaredLogger, c conf.LimiterA
 	}
 
 	d = app.Dependencies{
-		Build:           build,
-		Host:            c.API.Host,
-		DebugHost:       c.API.DebugHost,
-		ReadTimout:      c.API.ReadTimeout,
-		WriteTimeout:    c.API.WriteTimeout,
-		IdleTimeout:     c.API.IdleTimeout,
-		ShutdownTimeout: c.API.ShutdownTimeout,
-		Shutdown:        sd,
-		Logger:          l,
+		Build:    build,
+		Host:     c.API.Host,
+		Shutdown: sd,
+		Logger:   l,
 		Kubernetes: app.KubeInfo{
 			Pod:       c.Kubernetes.Pod,
 			PodIP:     c.Kubernetes.PodIP,
@@ -95,6 +91,13 @@ func NewAPIMux(d app.Dependencies, c conf.API) *fiber.App {
 			Logger: d.Logger.Desugar(),
 		},
 	))
+
+	app.Use(limiter.New(limiter.Config{
+		Limit:       c.RateLimit,
+		Interval:    c.RateLimitInterval,
+		TTLInterval: c.RateLimitCleanStale,
+		MinTTL:      c.RateLimitCleanInactive,
+	}))
 
 	return app
 }

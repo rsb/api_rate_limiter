@@ -8,7 +8,6 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
-	"time"
 )
 
 const (
@@ -16,17 +15,12 @@ const (
 )
 
 type Dependencies struct {
-	ServiceName     string
-	Build           string
-	Host            string
-	DebugHost       string
-	ReadTimout      time.Duration
-	WriteTimeout    time.Duration
-	IdleTimeout     time.Duration
-	ShutdownTimeout time.Duration
-	Kubernetes      KubeInfo
-	Shutdown        chan os.Signal
-	Logger          *zap.SugaredLogger
+	ServiceName string
+	Build       string
+	Host        string
+	Kubernetes  KubeInfo
+	Shutdown    chan os.Signal
+	Logger      *zap.SugaredLogger
 }
 
 type KubeInfo struct {
