@@ -4,25 +4,48 @@ package limiter
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/rsb/api_rate_limiter/foundation/limits"
+	"github.com/rsb/failure"
+	"strconv"
 	"time"
 )
 
-// Config layouts the configuration required to operate this middleware.
-//
-// Next 				- used to determine if this middleware should be skipped
-// Limit 				- max number of requests for the given duration
-// Interval 		- amount of time the Limit is measured against
-// KeyGenerator - allow for custom keys to be used to limit against
-// TTLInterval  - rate at which stale entries are cleaned
-// MinTTL     	- inactivity period before deletion
-// StorageSize  - Initial size of data store
-// Exceeded     - Is called when the limit is exceeded
-type Config struct {
-	Next        func(c *fiber.Ctx) bool
-	Limit       uint64
-	Interval    time.Duration
-	TTLInterval time.Duration
-	MinTTL      time.Duration
-	StorageSize int
-	Exceeded    fiber.Handler
+const (
+	HeaderRateLimitLimit     = "X-RateLimit-Limit"
+	HeaderRateLimitRemaining = "X-RateLimit-Remaining"
+	HeaderRateLimitReset     = "X-RateLimit-Reset"
+	HeaderRetryAfter         = "Retry-After"
+)
+
+func New(opts ...Config) fiber.Handler {
+	cfg := configure(opts...)
+
+	store := limits.NewMemoryStore(ToLimitsConfig(cfg))
+	go store.GarbageCollector()
+	return func(c *fiber.Ctx) error {
+		if cfg.Next != nil && cfg.Next(c) {
+			return c.Next()
+		}
+
+		// Defaults to IP
+		key := cfg.KeyGenerator(c)
+
+		info, err := store.Take(key)
+		if err != nil {
+			return failure.Wrap(err, "store.Take failed for (%s)", key)
+		}
+
+		reset := time.Unix(0, int64(info.Reset)).UTC().Format(time.RFC1123)
+
+		c.Set(HeaderRateLimitLimit, strconv.FormatUint(info.LimitSize, 10))
+		c.Set(HeaderRateLimitRemaining, strconv.FormatUint(info.Remaining, 10))
+		c.Set(HeaderRateLimitReset, reset)
+
+		if !info.OperationOk {
+			c.Set(HeaderRetryAfter, reset)
+			return cfg.Exceeded(c)
+		}
+
+		return c.Next()
+	}
 }

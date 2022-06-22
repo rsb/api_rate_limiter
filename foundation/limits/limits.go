@@ -79,7 +79,7 @@ type MemoryStore struct {
 
 // NewMemoryStore is the main constructor used to create and configure the
 // in-memory storage
-func NewMemoryStore(opts ...*Config) (*MemoryStore, error) {
+func NewMemoryStore(opts ...*Config) *MemoryStore {
 	var config *Config
 	defaults := NewDefaultConfig()
 	if len(opts) > 0 && opts[0] != nil {
@@ -121,9 +121,7 @@ func NewMemoryStore(opts ...*Config) (*MemoryStore, error) {
 		stop:     make(chan struct{}),
 	}
 
-	// Run bucket garbage collector
-	go store.collector()
-	return &store, nil
+	return &store
 }
 
 func (m *MemoryStore) Take(key string) (RateInfo, error) {
@@ -221,9 +219,9 @@ func (m *MemoryStore) Close() error {
 	return nil
 }
 
-// collector continually iterates over the map and purges old values on the provided
+// GarbageCollector continually iterates over the map and purges old values on the provided
 // sweep interval.
-func (m *MemoryStore) collector() {
+func (m *MemoryStore) GarbageCollector() {
 	ticker := time.NewTicker(m.ttl.Interval)
 	defer ticker.Stop()
 

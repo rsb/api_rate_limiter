@@ -21,8 +21,8 @@ func TestMemoryStore_FillRate(t *testing.T) {
 			Limit:    65525,
 			Interval: time.Second,
 		}
-		store, err := limits.NewMemoryStore(&config)
-		require.NoError(t, err)
+		store := limits.NewMemoryStore(&config)
+		go store.GarbageCollector()
 
 		for i := 0; i < 20; i++ {
 			info, err := store.Take("key")
@@ -57,11 +57,11 @@ func TestMemoryStore_Take(t *testing.T) {
 				TTLInterval: 24 * time.Hour,
 				MinTTL:      24 * time.Hour,
 			}
-			store, err := limits.NewMemoryStore(&config)
-			require.NoError(t, err)
+			store := limits.NewMemoryStore(&config)
+			go store.GarbageCollector()
 
 			t.Cleanup(func() {
-				err = store.Close()
+				err := store.Close()
 				require.NoError(t, err)
 			})
 
@@ -153,8 +153,8 @@ func TestMemoryStore_GetBeforeAnySet(t *testing.T) {
 		MinTTL:      24 * time.Hour,
 	}
 
-	store, err := limits.NewMemoryStore(&config)
-	require.NoError(t, err)
+	store := limits.NewMemoryStore(&config)
+	go store.GarbageCollector()
 
 	t.Cleanup(func() {
 		err := store.Close()
@@ -179,8 +179,8 @@ func TestMemoryStore_GetAfterSet(t *testing.T) {
 		MinTTL:      24 * time.Hour,
 	}
 
-	store, err := limits.NewMemoryStore(&config)
-	require.NoError(t, err)
+	store := limits.NewMemoryStore(&config)
+	go store.GarbageCollector()
 
 	t.Cleanup(func() {
 		err := store.Close()
@@ -188,7 +188,7 @@ func TestMemoryStore_GetAfterSet(t *testing.T) {
 	})
 
 	key := "my-key"
-	err = store.Set(key, uint64(5), 5*time.Second)
+	err := store.Set(key, uint64(5), 5*time.Second)
 	require.NoError(t, err)
 
 	limit, remaining, err := store.Get(key)
@@ -208,8 +208,8 @@ func TestMemoryStore_GetAfterTake(t *testing.T) {
 		MinTTL:      24 * time.Hour,
 	}
 
-	store, err := limits.NewMemoryStore(&config)
-	require.NoError(t, err)
+	store := limits.NewMemoryStore(&config)
+	go store.GarbageCollector()
 
 	t.Cleanup(func() {
 		err := store.Close()
