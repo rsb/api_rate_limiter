@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Security`: in case of vulnerabilities.
 
 ## [Unreleased]
+### Remaining 
+- document README.md to instruct users how to run the example
+- add ARCHITECTURE.md to explain code layout
+- add integrations tests to show the system is working
+
+## [0.5.0] - 2022-06-22
+### Added 
+- `limits` package to foundation it handles the main logic
+- `app/api/middle/limiter` middleware package that integrates rate limiter into fiber
+- `conf` added configuration to control middleware
+- `construct` added logic in constructors to configure and wire up middleware
 
 ## [0.4.0] - 2022-06-19
 ### Added
