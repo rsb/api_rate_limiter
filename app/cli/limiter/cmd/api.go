@@ -25,8 +25,8 @@ func init() {
 
 var apiCmd = &cobra.Command{
 	Use:   "api",
-	Short: "controls the limiter-api service",
-	Long: `limiter-api can be started and stopped using
+	Short: "controls the limits-api service",
+	Long: `limits-api can be started and stopped using
 serve - start the services server
 stop  - shutdown the services server
 `,

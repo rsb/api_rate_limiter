@@ -25,10 +25,10 @@ var (
 
 // rootCmd is the base cli command
 var rootCmd = &cobra.Command{
-	Use:   "limiter",
-	Short: "cli tool to help develop, deploy and test the rate limiter example",
-	Long: `limiter cli tool is used for the following:
-- Aid in development of the limiter api service
+	Use:   "limits",
+	Short: "cli tool to help develop, deploy and test the rate limits example",
+	Long: `limits cli tool is used for the following:
+- Aid in development of the limits api service
 - API server management
 - Admin tasks
 `,

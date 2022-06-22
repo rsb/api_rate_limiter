@@ -18,7 +18,7 @@ To run the example you have four options:
 You can use the cli by using `go run` on the terminal. A developer might do
 a quick check using this method, certainly not a production workflow.
 ```shell
-go run app/cli/limiter/main.go api serve
+go run app/cli/limits/main.go api serve
 ```
 
 ### Manually build go
@@ -26,7 +26,7 @@ You can manually compile the cli app and run the web server.
 
 ```shell
  make build
- ./limiter api serve
+ ./limits api serve
 ```
 
 ### Run docker
@@ -42,7 +42,7 @@ make command will output the container id
 Currently, only kind is support as this is just an example.
 ```shell
 make kind-up
-make docker-limiter-api
+make docker-limits-api
 make kind-load
 make kind-apply
 

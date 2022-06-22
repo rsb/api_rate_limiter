@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	ServiceName = "limiter"
+	ServiceName = "limits"
 )
 
 type Dependencies struct {
