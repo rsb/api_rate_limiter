@@ -102,7 +102,7 @@ func runAPI(config conf.LimiterAPI, log *zap.SugaredLogger) error {
 		}
 	}()
 
-	apiMux := construct.NewAPIMux(depend, config.API)
+	apiMux := construct.NewAPIMux(config.API, log)
 	apiMux = construct.AddAllRoutes(apiMux, &depend)
 	// Make a channel to listen for errors coming from the listener. Use a
 	// buffered channel so the goroutine can exit if we don't collect this error.

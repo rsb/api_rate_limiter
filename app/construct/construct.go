@@ -81,14 +81,14 @@ func NewHttpClient(config conf.HTTPClient) *http.Client {
 	}
 }
 
-func NewAPIMux(d app.Dependencies, c conf.API) *fiber.App {
+func NewAPIMux(c conf.API, logger *zap.SugaredLogger) *fiber.App {
 
 	app := fiber.New(c.NewFiberConfig())
 	app.Use(recover.New())
 	app.Use(cors.New())
 	app.Use(fiberzap.New(
 		fiberzap.Config{
-			Logger: d.Logger.Desugar(),
+			Logger: logger.Desugar(),
 		},
 	))
 
