@@ -16,7 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Remaining 
 - document README.md to instruct users how to run the example
 - add ARCHITECTURE.md to explain code layout
-- add integrations tests to show the system is working
+
+
+## [0.6.0] - 2022-06-22
+### Added
+- `tests/api_test.go` integration tests to show the system is working
 
 ## [0.5.0] - 2022-06-22
 ### Added 
