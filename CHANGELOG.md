@@ -14,9 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Remaining 
-- document README.md to instruct users how to run the example
-- add ARCHITECTURE.md to explain code layout
 
+
+Note: 1.0.0 release means its ready as an example and not production code.
+## [1.0.0]
+### Added
+- ARCHITECTURE.md to explain rate limit code and example code layout
+ 
+### Changed
+- updated README.md, fixed typos and added testing section
+
+### Removed
+- removed `burst` since it is not used.
 
 ## [0.6.0] - 2022-06-22
 ### Added

@@ -6,7 +6,7 @@ is determined through configuration. I f the request count exceeds the rate
 limiters max number then the call will be rejected returning a http status
 
 ```
-429 Too Man Requests
+429 Too Many Requests
 ```
 
 This particular implementation will limit requests by client IP address
@@ -51,3 +51,17 @@ After that the endpoint should be reachable at
 ```shell
 http://locahost:3000/ping
 ```
+
+# Tests
+you can run the tests as
+
+```shell
+go test ./...
+```
+
+or 
+```shell
+make test
+```
+
+Please note this will run both the `unit` and `integration` tests

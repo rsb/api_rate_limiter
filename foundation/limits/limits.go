@@ -181,24 +181,6 @@ func (m *MemoryStore) Set(key string, tokens uint64, interval time.Duration) err
 	return nil
 }
 
-// Burst adds the provided value to the bucket's currently available limit
-func (m *MemoryStore) Burst(key string, tokens uint64) error {
-	m.lock.Lock()
-	if b, ok := m.data[key]; ok {
-		b.lock.Lock()
-		m.lock.Unlock()
-		b.availableTokens = b.availableTokens + tokens
-		b.lock.Unlock()
-		return nil
-	}
-
-	// this is a new record for the key
-	b := NewBucket(m.limit+tokens, m.interval)
-	m.data[key] = b
-	m.lock.Unlock()
-	return nil
-}
-
 // Close stops the memory limits and cleans up any outstanding sessions
 // You should always call this method as it releases the memory consumed
 // by the map and releases the tickets.
